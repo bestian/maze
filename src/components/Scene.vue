@@ -111,9 +111,9 @@ export default {
             this.scene.add(mesh);  
           }
           if (maze[x][z] === 5) {
-            var Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
-            var material2 = new THREE.MeshBasicMaterial( {color: 0x00ff} );
-            this.me = new THREE.Mesh( Spheregeometry, material2.clone() );
+            var Spheregeometry2 = new THREE.SphereGeometry( 1, 32, 32 );
+            var material3 = new THREE.MeshBasicMaterial( {color: 0x00ff} );
+            this.me = new THREE.Mesh( Spheregeometry2, material3.clone() );
             this.me.position.x = -5*x - 10;
             this.me.position.y = -20;
             this.me.position.z = -5*z + 20;
