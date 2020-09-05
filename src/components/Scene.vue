@@ -64,11 +64,46 @@ export default {
     light.shadow.mapSize.height = 2048
     this.scene.add(light)
 
-    // Adding a cube
-    let geometry = new THREE.BoxGeometry()
+    // Adding cubes
     let material = new THREE.MeshPhysicalMaterial({color: 0x00ff00})
-    let cube = new THREE.Mesh(geometry, material)
-    this.scene.add(cube)
+    var BoxGeometry = new THREE.BoxGeometry(5, 1, 5)
+    var maze = [
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,9,1],
+      [1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1,1,1,0,1,1,1,1,1],
+      [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1],
+      [1,1,1,0,0,0,0,0,1,0,0,0,0,0,1],
+      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1],
+      [1,1,1,0,1,0,0,0,0,0,0,0,1,0,1],
+      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1],
+      [1,1,1,9,1,1,1,1,1,1,1,1,1,1,1]
+    ];
+    var meshArray = [];
+    for (var x=0; x<maze.length; x++) {
+        for(var z=0; z<maze[0].length; z++){
+          var mesh;
+          if (maze[x][z] === 1) {
+            mesh = new THREE.Mesh(BoxGeometry, material.clone());
+            meshArray.push(mesh);
+            mesh.position.x = -5*x - 10;
+            mesh.position.y = -20;
+            mesh.position.z = -5*z + 20;
+            this.scene.add(mesh);  
+            console.log(meshArray.length, mesh.position);
+          }
+          if (maze[x][z] === 9) {
+            var Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
+            var material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+            mesh = new THREE.Mesh( Spheregeometry, material2.clone() );
+            meshArray.push(mesh);
+            mesh.position.x = -5*x - 10;
+            mesh.position.y = -20;
+            mesh.position.z = -5*z + 20;
+            this.scene.add(mesh);  
+            console.log(meshArray.length, mesh.position);
+          }
+        }
+    }
 
     this.animateThreeJs()
   },
