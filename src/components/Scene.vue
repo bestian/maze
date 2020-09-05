@@ -1,7 +1,14 @@
 <template>
   <div class="scene">
+    <div id="ctrl">
+      <button @click="move('x', -5)"> 向前 </button> 
+      <button @click="move('x', 5)"> 向後 </button> 
+      <button @click="move('z', 5)"> 向左 </button> 
+      <button @click="move('z', -5)"> 向右 </button> 
+    </div>
     <div id="three-scene-canvas"></div>
   </div>
+  
 </template>
 
 <script>
@@ -16,7 +23,9 @@ export default {
       scene: null,
       camera: null,
       renderer: null,
-      controls: null
+      controls: null,
+      meshArray: [],
+      me: null
     }
   },
   mounted () {
@@ -69,7 +78,7 @@ export default {
     let material = new THREE.MeshPhysicalMaterial({color: 0x00ff00})
     var BoxGeometry = new THREE.BoxGeometry(5, 1, 5)
     var maze = [
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,9,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,5,1],
       [1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
       [1,0,1,1,1,0,1,1,1,0,1,1,1,1,1],
       [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1],
@@ -79,29 +88,36 @@ export default {
       [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1],
       [1,1,1,9,1,1,1,1,1,1,1,1,1,1,1]
     ];
-    var meshArray = [];
+    this.meshArray = [];
     for (var x=0; x<maze.length; x++) {
         for(var z=0; z<maze[0].length; z++){
           var mesh;
           if (maze[x][z] === 1) {
             mesh = new THREE.Mesh(BoxGeometry, material.clone());
-            meshArray.push(mesh);
+            this.meshArray.push(mesh);
             mesh.position.x = -5*x - 10;
             mesh.position.y = -20;
             mesh.position.z = -5*z + 20;
             this.scene.add(mesh);  
-            console.log(meshArray.length, mesh.position);
+            console.log(this.meshArray.length, mesh.position);
           }
           if (maze[x][z] === 9) {
             var Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
             var material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
             mesh = new THREE.Mesh( Spheregeometry, material2.clone() );
-            meshArray.push(mesh);
             mesh.position.x = -5*x - 10;
             mesh.position.y = -20;
             mesh.position.z = -5*z + 20;
             this.scene.add(mesh);  
-            console.log(meshArray.length, mesh.position);
+          }
+          if (maze[x][z] === 5) {
+            var Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
+            var material2 = new THREE.MeshBasicMaterial( {color: 0x00ff} );
+            this.me = new THREE.Mesh( Spheregeometry, material2.clone() );
+            this.me.position.x = -5*x - 10;
+            this.me.position.y = -20;
+            this.me.position.z = -5*z + 20;
+            this.scene.add(this.me);  
           }
         }
     }
@@ -113,7 +129,31 @@ export default {
       this.renderer.render(this.scene, this.camera)
       this.renderer.shadowMap.needsUpdate = true
       console.log(this.camera.position.x)
+    },
+    move (xyz, int) {
+      this.me.position[xyz] += int;
+      for (var i = 0; i < this.meshArray.length; i++) {
+
+        var position = new THREE.Vector3();
+        position.getPositionFromMatrix( this.meshArray[i].matrixWorld );
+
+        if (position.x === this.me.position.x && position.z === this.me.position.z ) {
+          this.me.position[xyz] -= int;
+        }
+      }
+      this.animateThreeJs();
     }
   }
 }
 </script>
+
+<style type="text/css" scoped="">
+
+#ctrl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+</style>
