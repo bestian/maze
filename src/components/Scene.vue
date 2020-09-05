@@ -42,6 +42,7 @@ export default {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.addEventListener('change', this.animateThreeJs )
+    this.controls.enableKeys = true
 
     this.renderer.setSize(this.sceneCanvas.offsetWidth, this.sceneCanvas.offsetHeight)
     this.renderer.setClearColor("#212121")
@@ -111,6 +112,7 @@ export default {
     animateThreeJs () {
       this.renderer.render(this.scene, this.camera)
       this.renderer.shadowMap.needsUpdate = true
+      console.log(this.camera.position.x)
     }
   }
 }
