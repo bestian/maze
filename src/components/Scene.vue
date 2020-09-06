@@ -1,10 +1,10 @@
 <template>
   <div class="scene">
     <div id="ctrl">
-      <button @click="move('x', -5)"> 向前 </button> 
-      <button @click="move('x', 5)"> 向後 </button> 
-      <button @click="move('z', 5)"> 向左 </button> 
-      <button @click="move('z', -5)"> 向右 </button> 
+      <button @click="move('x', -5)"> 向右 </button> 
+      <button @click="move('x', 5)"> 向左 </button> 
+      <button @click="move('z', -5)"> 向前 </button> 
+      <button @click="move('z', 5)"> 向後 </button> 
     </div>
     <div id="three-scene-canvas"></div>
   </div>
@@ -25,7 +25,8 @@ export default {
       renderer: null,
       controls: null,
       meshArray: [],
-      me: null
+      me: null,
+      you: null
     }
   },
   mounted () {
@@ -41,7 +42,7 @@ export default {
       0.1,
       1000
     )
-    this.camera.position.set(15, 5, 15)
+    this.camera.position.set(20, 5, -20)
     
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -51,7 +52,6 @@ export default {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.addEventListener('change', this.animateThreeJs )
-    this.controls.enableKeys = true
 
     this.renderer.setSize(this.sceneCanvas.offsetWidth, this.sceneCanvas.offsetHeight)
     this.renderer.setClearColor("#212121")
@@ -76,17 +76,24 @@ export default {
 
     // Adding cubes
     let material = new THREE.MeshPhysicalMaterial({color: 0x00ff00})
-    var BoxGeometry = new THREE.BoxGeometry(5, 1, 5)
+    var BoxGeometry = new THREE.BoxGeometry(5, 5, 5)
     var maze = [
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,5,1],
-      [1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,1,1,0,1,1,1,1,1],
-      [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1],
-      [1,1,1,0,0,0,0,0,1,0,0,0,0,0,1],
-      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1],
-      [1,1,1,0,1,0,0,0,0,0,0,0,1,0,1],
-      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1],
-      [1,1,1,9,1,1,1,1,1,1,1,1,1,1,1]
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1,1,1,0,1,1,1,5,1,0,1,1,1,1],
+      [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,1,0,1],
+      [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,1,1,0,1,0,0,0,1,0,0,0,0,0,1,0,1,1,0,1],
+      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,1,0,1],
+      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,0,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,0,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,0,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,1,1,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     ];
     this.meshArray = [];
     for (var x=0; x<maze.length; x++) {
@@ -98,17 +105,16 @@ export default {
             mesh.position.x = -5*x - 10;
             mesh.position.y = -20;
             mesh.position.z = -5*z + 20;
-            this.scene.add(mesh);  
-            console.log(this.meshArray.length, mesh.position);
+            this.scene.add(mesh);
           }
           if (maze[x][z] === 9) {
             var Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
             var material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-            mesh = new THREE.Mesh( Spheregeometry, material2.clone() );
-            mesh.position.x = -5*x - 10;
-            mesh.position.y = -20;
-            mesh.position.z = -5*z + 20;
-            this.scene.add(mesh);  
+            this.you = new THREE.Mesh( Spheregeometry, material2.clone() );
+            this.you.position.x = -5*x - 10;
+            this.you.position.y = -20;
+            this.you.position.z = -5*z + 20;
+            this.scene.add(this.you);  
           }
           if (maze[x][z] === 5) {
             var Spheregeometry2 = new THREE.SphereGeometry( 1, 32, 32 );
@@ -123,12 +129,18 @@ export default {
     }
 
     this.animateThreeJs()
+    window.addEventListener('keyup', this.keyup)
   },
   methods: {
     animateThreeJs () {
       this.renderer.render(this.scene, this.camera)
       this.renderer.shadowMap.needsUpdate = true
-      console.log(this.camera.position.x)
+    },
+    keyup(e) {
+      if (e.which === 37) { this.move('x', -5) }
+      if (e.which === 38) { this.move('z', -5) }
+      if (e.which === 39) { this.move('x', 5) }
+      if (e.which === 40) { this.move('z', 5) }
     },
     move (xyz, int) {
       this.me.position[xyz] += int;
@@ -140,6 +152,14 @@ export default {
         if (position.x === this.me.position.x && position.z === this.me.position.z ) {
           this.me.position[xyz] -= int;
         }
+
+        var xz = {x: this.me.position.x, z: this.me.position.z }
+        this.camera.position.set(xz.x, this.me.position.y + 15, xz.z);
+        this.controls.target.set(this.me.position.x, this.me.position.y, this.me.position.z);
+        this.controls.update();
+      }
+      if (this.me.position.x === this.you.position.x && this.me.position.z === this.you.position.z ) {
+        alert('You Win!')
       }
       this.animateThreeJs();
     }
