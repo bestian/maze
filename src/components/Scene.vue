@@ -4,7 +4,16 @@
       <button @click="move('x', -5)"> 向右 </button> 
       <button @click="move('x', 5)"> 向左 </button> 
       <button @click="move('z', -5)"> 向前 </button> 
-      <button @click="move('z', 5)"> 向後 </button> 
+      <button @click="move('z', 5)"> 向後 </button>
+      <aplayer autoplay hideen
+      :music="{
+        title: 'Background',
+        src: '/pokemon.mp3'
+      }"
+    />
+    </div>
+    <div id="win" v-show="win">
+      <img src="../assets/rainbow.jpg">
     </div>
     <div id="three-scene-canvas"></div>
   </div>
@@ -14,9 +23,13 @@
 <script>
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import Aplayer from 'vue-aplayer'
 
 export default {
   name: 'Scene',
+  components: {
+      Aplayer
+  },
   data () {
     return {
       sceneCanvas: null,
@@ -26,8 +39,13 @@ export default {
       controls: null,
       meshArray: [],
       me: null,
-      you: null
+      you: null,
+      win: false,
+      audio: null
     }
+  },
+  created () {
+    this.audio = document.getElementById('audio');
   },
   mounted () {
     /* **************
@@ -76,7 +94,7 @@ export default {
 
     // Adding cubes
     let material = new THREE.MeshPhysicalMaterial({color: 0x00ff00})
-    var BoxGeometry = new THREE.BoxGeometry(5, 5, 5)
+    var BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
     var maze = [
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
@@ -84,16 +102,21 @@ export default {
       [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1],
       [1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
       [1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,1,0,1],
+      [1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,1,1,0,1],
+      [1,0,1,0,1,0,1,0,1,0,0,0,0,1,1,0,1,1,0,1],
+      [1,0,0,0,1,0,1,0,1,1,1,1,0,1,1,0,1,1,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,1,0,1,1,0,1,1,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,0,0,0,1,0,1,1,0,1],
       [1,0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1],
       [1,1,1,0,1,0,0,0,1,0,0,0,0,0,1,0,1,1,0,1],
       [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
       [1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,1,0,1],
       [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
       [1,0,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
+      [1,0,1,9,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
       [1,0,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
-      [1,0,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
-      [1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1],
-      [1,1,1,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+      [1,0,0,0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     ];
     this.meshArray = [];
     for (var x=0; x<maze.length; x++) {
@@ -127,9 +150,8 @@ export default {
           }
         }
     }
-
-    this.animateThreeJs()
-    window.addEventListener('keyup', this.keyup)
+    this.animateThreeJs();
+    window.addEventListener('keyup', this.keyup);
   },
   methods: {
     animateThreeJs () {
@@ -159,7 +181,7 @@ export default {
         this.controls.update();
       }
       if (this.me.position.x === this.you.position.x && this.me.position.z === this.you.position.z ) {
-        alert('You Win!')
+        this.win = true
       }
       this.animateThreeJs();
     }
@@ -175,5 +197,20 @@ export default {
   left: 0;
   z-index: 999;
 }
+
+#win {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 50px;
+  left: 50px;
+  width: 80vw;
+  height: 80vh;
+}
+
+#win img {
+  width: 100%
+} 
 
 </style>
