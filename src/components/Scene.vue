@@ -1,18 +1,12 @@
 <template>
   <div class="scene">
-    <div id="ctrl">
-      <button @click="move('x', -5)"> 向右 </button> 
-      <button @click="move('x', 5)"> 向左 </button> 
-      <button @click="move('z', -5)"> 向前 </button> 
-      <button @click="move('z', 5)"> 向後 </button>
-      <aplayer autoplay hideen
-      :music="{
-        title: 'Background',
-        src: '/pokemon.mp3'
-      }"
-    />
+    <div id="ctrl"> 
+      <button @click="move('z', -5)"> 前 </button> 
+      <button @click="move('z', 5)"> 後 </button>
+      <button @click="move('x', -5)"> 左 </button> 
+      <button @click="move('x', 5)"> 右 </button>
     </div>
-    <div id="win" v-show="win">
+    <div id="win" v-show="win" @click="win = false">
       <img src="../assets/rainbow.jpg">
     </div>
     <div id="three-scene-canvas"></div>
@@ -23,13 +17,9 @@
 <script>
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import Aplayer from 'vue-aplayer'
 
 export default {
   name: 'Scene',
-  components: {
-      Aplayer
-  },
   data () {
     return {
       sceneCanvas: null,
@@ -193,9 +183,13 @@ export default {
 
 #ctrl {
   position: fixed;
-  top: 0;
+  bottom: 15px;
   left: 0;
   z-index: 999;
+}
+
+#ctrl button {
+  font-size: 48px;
 }
 
 #win {
@@ -207,10 +201,11 @@ export default {
   left: 50px;
   width: 80vw;
   height: 80vh;
+  cursor: pointer;
 }
 
 #win img {
   width: 100%
-} 
+}
 
 </style>
