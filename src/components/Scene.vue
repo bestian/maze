@@ -166,7 +166,8 @@ export default {
         }
 
         var xz = {x: this.me.position.x, z: this.me.position.z }
-        this.camera.position.set(xz.x, this.me.position.y + 15, xz.z);
+        
+        this.camera.position.set(xz.x, this.me.position.y + 20, xz.z);
         this.controls.target.set(this.me.position.x, this.me.position.y, this.me.position.z);
         this.controls.update();
       }
