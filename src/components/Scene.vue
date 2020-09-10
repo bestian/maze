@@ -1,10 +1,10 @@
 <template>
   <div class="scene">
     <div id="ctrl"> 
-      <button id="up" @click="move('z', -5)" :class = "{active: m == 'up' }"> 前 </button> 
-      <button id="down" @click="move('z', 5)" :class = "{ active: m == 'down' }"> 後 </button>
-      <button id="left" @click="move('x', -5)" :class = "{ active: m == 'left' }"> 左 </button> 
-      <button id="right" @click="move('x', 5)" :class = "{ active: m == 'right' }"> 右 </button>
+      <button id="up" @click="move('z', -5); m='up'" :class = "{active: m == 'up' }"> 前 </button> 
+      <button id="down" @click="move('z', 5); m='down'" :class = "{ active: m == 'down' }"> 後 </button>
+      <button id="left" @click="move('x', -5); m='left'" :class = "{ active: m == 'left' }"> 左 </button> 
+      <button id="right" @click="move('x', 5); m='right'" :class = "{ active: m == 'right' }"> 右 </button>
     </div>
     <a id="win" v-show="win" @click="win = false">
       <img src="../assets/rainbow.jpg">
@@ -120,7 +120,7 @@ export default {
           if (this.maze[x][z] === 1) {
             let c = [0x00ff00, 0x00cc00, 0x009900][Math.floor(Math.random()*3)]
             let material = new THREE.MeshPhysicalMaterial({color: c})
-            let BoxGeometry = new THREE.BoxGeometry(5, 5, 5)
+            let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
             mesh = new THREE.Mesh(BoxGeometry, material.clone());
             this.meshArray.push(mesh);
             mesh.position.x = -5*x - 10;
@@ -131,9 +131,9 @@ export default {
 
           // 終點
           if (this.maze[x][z] === 9) {
-            let Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
+            let BoxGeometry = new THREE.BoxGeometry( 2, 30, 2);
             let material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-            this.you = new THREE.Mesh( Spheregeometry, material2.clone() );
+            this.you = new THREE.Mesh( BoxGeometry, material2.clone() );
             this.you.position.x = -5*x - 10;
             this.you.position.y = -20;
             this.you.position.z = -5*z + 20;
