@@ -4,7 +4,7 @@
     :music="{
       title: 'Background',
       artist: 'Game',
-      src: '/pokemon.mp3'
+      src: 'https://bestian.github.io/maze/pokemon.mp3'
     }"
     />
     <Scene/>
