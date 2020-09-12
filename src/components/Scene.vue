@@ -161,7 +161,7 @@ export default {
       this.renderer.shadowMap.needsUpdate = true
     },
     keyup(e) {
-      // Left key
+      // left key
       if (e.which === 37) { this.move('x', -5); this.m = 'left' }
       // up key
       if (e.which === 38) { this.move('z', -5); this.m = 'up' }
