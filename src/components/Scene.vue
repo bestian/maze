@@ -160,6 +160,9 @@ export default {
       this.renderer.render(this.scene, this.camera)
       this.renderer.shadowMap.needsUpdate = true
     },
+    victory () {
+      //噴出很多方塊
+    },
     keyup(e) {
       // left key
       if (e.which === 37) { this.move('x', -5); this.m = 'left' }
@@ -198,6 +201,7 @@ export default {
 
       if (this.me.position.x === this.you.position.x && this.me.position.z === this.you.position.z ) {
         this.win = true
+        this.victory()
       }
 
       this.animateThreeJs();
