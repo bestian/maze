@@ -7,7 +7,7 @@
       <button id="right" @click="move('x', 5); m='right'" :class = "{ active: m == 'right' }"> 右 </button>
     </div>
     <a id="win" v-show="win" @click="win = false">
-      <img src="../assets/rainbow.jpg">
+      <img src="../assets/cat.jpg">
     </a>
     <div id="three-scene-canvas"></div>
   </div>
