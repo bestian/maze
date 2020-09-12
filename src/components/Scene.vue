@@ -134,11 +134,11 @@ export default {
 
           // 終點
           if (this.maze[x][z] === 9) {
-            let BoxGeometry = new THREE.BoxGeometry( 2, 30, 2);
+            let BoxGeometry = new THREE.BoxGeometry( 2, 50, 2);
             let material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
             this.you = new THREE.Mesh( BoxGeometry, material2.clone() );
             this.you.position.x = -5*x - 10;
-            this.you.position.y = -20;
+            this.you.position.y = 5;
             this.you.position.z = -5*z + 20;
             this.scene.add(this.you);  
           }
@@ -163,7 +163,32 @@ export default {
       this.renderer.render(this.scene, this.camera)
       this.renderer.shadowMap.needsUpdate = true
     },
+    victory () {
+      this.win = true
+      //噴出很多方塊
+      var x = this.you.position.x;
+      var z = this.you.position.z;
 
+      var mesh;
+
+      for (var i = 0; i < [-4,-3,-2,-1,0,1,2,3,4].length; i++) {
+        for (var j = 0; j < [-4,-3,-2,-1,0,1,2,3,4].length; j++) {
+          let c = [0xcd7f33, 0xd9d9e9, 0xffce33][Math.floor(Math.random()*3)]
+          let material = new THREE.MeshPhysicalMaterial({color: c})
+          let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
+          mesh = new THREE.Mesh(BoxGeometry, material.clone());
+
+          this.meshArray.push(mesh);
+          mesh.position.x = x + 10*i - 10;
+          mesh.position.y = -5;
+          mesh.position.z = z - 10*j + 20;
+          this.scene.add(mesh);
+        }
+      }
+      this.camera.position.set(x, this.me.position.y + 50, z);
+      this.controls.update();
+      this.animateThreeJs();
+    },
     keyup(e) {
       // left key
       if (e.which === 37) { this.move('x', -5); this.m = 'left' }
@@ -181,13 +206,15 @@ export default {
       if (e.which === 68) { this.move('x', 5); this.m = 'right' }
       // s key
       if (e.which === 83) { this.move('z', 5); this.m = 'down' }
+      // v key
+      if (e.which === 86) { this.victory() }
     },
     move (xyz, int) {
       this.me.position[xyz] += int;
       for (var i = 0; i < this.meshArray.length; i++) {
 
         var position = new THREE.Vector3();
-        position.getPositionFromMatrix( this.meshArray[i].matrixWorld );
+        position.setFromMatrixPosition( this.meshArray[i].matrixWorld );
 
         if (position.x === this.me.position.x && position.z === this.me.position.z ) {
           this.me.position[xyz] -= int;
@@ -201,7 +228,7 @@ export default {
       }
 
       if (this.me.position.x === this.you.position.x && this.me.position.z === this.you.position.z ) {
-        this.win = true
+        this.victory()
       }
 
       this.animateThreeJs();
@@ -230,8 +257,8 @@ export default {
   position: fixed;
   top: 50px;
   left: 50px;
-  width: 50vw;
-  height: 50vh;
+  width: 10vw;
+  height: 10vh;
   cursor: pointer;
 }
 
