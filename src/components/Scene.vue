@@ -118,7 +118,7 @@ export default {
           var mesh;
           // 牆壁
           if (this.maze[x][z] === 1) {
-            let c = [0x00ff00, 0x00cc00, 0x009900][Math.floor(Math.random()*3)]
+            let c = [0x3a406e, 0x00a6ff, 0xff003b][Math.floor(Math.random()*3)]
             let material = new THREE.MeshPhysicalMaterial({color: c})
             let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
             mesh = new THREE.Mesh(BoxGeometry, material.clone());
@@ -169,6 +169,14 @@ export default {
       if (e.which === 39) { this.move('x', 5); this.m = 'right' }
       // down key
       if (e.which === 40) { this.move('z', 5); this.m = 'down' }
+      // a key
+      if (e.which === 65) { this.move('x', -5); this.m = 'left' }
+      // w key
+      if (e.which === 87) { this.move('z', -5); this.m = 'up' }
+      // d key
+      if (e.which === 68) { this.move('x', 5); this.m = 'right' }
+      // s key
+      if (e.which === 83) { this.move('z', 5); this.m = 'down' }
     },
     move (xyz, int) {
       this.me.position[xyz] += int;
