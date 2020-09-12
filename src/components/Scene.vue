@@ -161,9 +161,7 @@ export default {
       this.renderer.shadowMap.needsUpdate = true
     },
     victory () {
-
       this.win = true
-
       //噴出很多方塊
       var x = this.you.position.x;
       var z = this.you.position.z;
@@ -172,7 +170,7 @@ export default {
 
       for (var i = 0; i < [-4,-3,-2,-1,0,1,2,3,4].length; i++) {
         for (var j = 0; j < [-4,-3,-2,-1,0,1,2,3,4].length; j++) {
-          let c = [0x3a406e, 0x00a6ff, 0xff003b][Math.floor(Math.random()*3)]
+          let c = [0xcd7f33, 0xd9d9e9, 0xffce33][Math.floor(Math.random()*3)]
           let material = new THREE.MeshPhysicalMaterial({color: c})
           let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
           mesh = new THREE.Mesh(BoxGeometry, material.clone());
