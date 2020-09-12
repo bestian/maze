@@ -138,11 +138,11 @@ export default {
 
           // 終點
           if (this.maze[x][z] === 9) {
-            let BoxGeometry = new THREE.BoxGeometry( 2, 30, 2);
+            let BoxGeometry = new THREE.BoxGeometry( 2, 50, 2);
             let material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
             this.you = new THREE.Mesh( BoxGeometry, material2.clone() );
             this.you.position.x = -5*x - 10;
-            this.you.position.y = -20;
+            this.you.position.y = 5;
             this.you.position.z = -5*z + 20;
             this.scene.add(this.you);  
           }
