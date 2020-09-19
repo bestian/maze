@@ -99,8 +99,7 @@ export default {
             var mesh;
             // 牆壁
             if (this.maze[x][z] === 1) {
-              let c = [0x3a406e, 0x00a6ff, 0xff003b][Math.floor(Math.random()*3)]
-              let material = new THREE.MeshPhysicalMaterial({color: c})
+              let material = new THREE.MeshPhysicalMaterial({color: 0x111111})
               let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
               mesh = new THREE.Mesh(BoxGeometry, material.clone());
               this.meshArray.push(mesh);
@@ -109,8 +108,9 @@ export default {
               mesh.position.z = -5*z + 20;
 
               // wireframe
+              let c = [0x3a406e, 0x00a6ff, 0xff003b][Math.floor(Math.random()*3)]
               var geo = new THREE.EdgesGeometry( mesh.geometry );
-              var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 4 } );
+              var mat = new THREE.LineBasicMaterial( { color: c, linewidth: 4 } );
               var wireframe = new THREE.LineSegments( geo, mat );
               wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
               mesh.add( wireframe );
