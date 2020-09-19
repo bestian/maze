@@ -75,17 +75,6 @@ export default {
     this.renderer.shadowMap.needsUpdate = true
     this.sceneCanvas.append(this.renderer.domElement)
     
-    // lighting
-    let ambientLight = new THREE.AmbientLight (0xdaccff, 0.5)
-    this.scene.add(ambientLight)
-
-    let light = new THREE.PointLight(0xfc831d, 1, 100)
-    light.position.set(15, 10, 15)
-    light.castShadow = true
-    light.shadow.radius = 1
-    light.shadow.mapSize.width = 2048
-    light.shadow.mapSize.height = 2048
-    this.scene.add(light)
     this.reset(0)
     window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
   },
@@ -95,6 +84,17 @@ export default {
       while(this.scene.children.length > 0){ 
           this.scene.remove(this.scene.children[0]); 
       }
+      // lighting
+      let ambientLight = new THREE.AmbientLight (0xdaccff, 0.5)
+      this.scene.add(ambientLight)
+
+      let light = new THREE.PointLight(0xfc831d, 1, 100)
+      light.position.set(15, 10, 15)
+      light.castShadow = true
+      light.shadow.radius = 1
+      light.shadow.mapSize.width = 2048
+      light.shadow.mapSize.height = 2048
+      this.scene.add(light)
       this.axios.get('./maze'+lev+'.json').then((response) => {
         // console.log(response.data)
         this.maze = response.data;
