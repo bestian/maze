@@ -107,6 +107,14 @@ export default {
               mesh.position.x = -5*x - 10;
               mesh.position.y = -20;
               mesh.position.z = -5*z + 20;
+
+              // wireframe
+              var geo = new THREE.EdgesGeometry( mesh.geometry );
+              var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 4 } );
+              var wireframe = new THREE.LineSegments( geo, mat );
+              wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
+              mesh.add( wireframe );
+
               this.scene.add(mesh);
             }
 
