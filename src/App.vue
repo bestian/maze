@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <aplayer autoplay :repeat="'repeat-one'"
+    <aplayer autoplay mini :repeat="'repeat-one'"
     :music="{
       title: 'Background',
       artist: 'Game',

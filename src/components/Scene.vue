@@ -47,136 +47,146 @@ export default {
     this.audio = document.getElementById('audio');
   },
   mounted () {
-    /* **************
-       BASIC SETUP
-    ************** */
-    this.axios.get('./maze2.json').then((response) => {
-      console.log(response.data)
-      this.maze = response.data;
-      this.sceneCanvas = document.getElementById('three-scene-canvas')
-      this.scene = new THREE.Scene()
-      this.camera = new THREE.PerspectiveCamera(
-        75,
-        this.sceneCanvas.getBoundingClientRect().width / this.sceneCanvas.getBoundingClientRect().height,
-        0.1,
-        1000
-      )
-      this.camera.position.set(20, 5, -20)
-      
-      this.renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        powerPreference: "high-performance"
-      })
-      this.renderer.outputEncoding = THREE.sRGBEncoding
-
-      this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-      this.controls.addEventListener('change', this.animateThreeJs )
-
-      this.renderer.setSize(this.sceneCanvas.offsetWidth, this.sceneCanvas.offsetHeight)
-      this.renderer.setClearColor("#212121")
-      this.renderer.shadowMap.enabled = true
-      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-      this.renderer.shadowMapSoft = true
-      this.renderer.shadowMap.autoUpdate = false
-      this.renderer.shadowMap.needsUpdate = true
-      this.sceneCanvas.append(this.renderer.domElement)
-      
-      // lighting
-      let ambientLight = new THREE.AmbientLight (0xdaccff, 0.5)
-      this.scene.add(ambientLight)
-
-      let light = new THREE.PointLight(0xfc831d, 1, 100)
-      light.position.set(15, 10, 15)
-      light.castShadow = true
-      light.shadow.radius = 1
-      light.shadow.mapSize.width = 2048
-      light.shadow.mapSize.height = 2048
-      this.scene.add(light)
-
-      this.meshArray = [];
-      for (var x=0; x < this.maze.length; x++) {
-          for(var z=0; z <this.maze[0].length; z++){
-            var mesh;
-            // 牆壁
-            if (this.maze[x][z] === 1) {
-              let r = Math.floor(Math.random()*3);
-              let c = [0x3a406e, 0x00a6ff, 0xff003b][r]
-              let material = new THREE.MeshPhysicalMaterial({color: c})
-              let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
-              mesh = new THREE.Mesh(BoxGeometry, material.clone());
-              this.meshArray.push(mesh);
-              mesh.position.x = -5*x - 10;
-              mesh.position.y = -20;
-              mesh.position.z = -5*z + 20;
-
-              // wireframe
-              c = [0x6a709e, 0x30d6ff, 0xff306b][r]
-              var geo = new THREE.EdgesGeometry( mesh.geometry );
-              var mat = new THREE.LineBasicMaterial( { color: c, linewidth: 4 } );
-              var wireframe = new THREE.LineSegments( geo, mat );
-              wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
-              mesh.add( wireframe );
-
-              this.scene.add(mesh);
-            }
-
-            // 終點
-            if (this.maze[x][z] === 9) {
-              let BoxGeometry = new THREE.BoxGeometry( 2, 50, 2);
-              let material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-              this.you = new THREE.Mesh( BoxGeometry, material2.clone() );
-              this.you.position.x = -5*x - 10;
-              this.you.position.y = 5;
-              this.you.position.z = -5*z + 20;
-              this.scene.add(this.you);  
-            }
-
-            // 起點
-            if (this.maze[x][z] === 5) {
-              let Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
-              let material3 = new THREE.MeshBasicMaterial( {color: 0x00ff} );
-              this.me = new THREE.Mesh( Spheregeometry, material3.clone() );
-              this.me.position.x = -5*x - 10;
-              this.me.position.y = -20;
-              this.me.position.z = -5*z + 20;
-              this.scene.add(this.me);  
-            }
-          }
-      }
-      this.animateThreeJs();
-      window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
+    this.sceneCanvas = document.getElementById('three-scene-canvas')
+    this.scene = new THREE.Scene()
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      this.sceneCanvas.getBoundingClientRect().width / this.sceneCanvas.getBoundingClientRect().height,
+      0.1,
+      1000
+    )
+    this.camera.position.set(20, 5, -20)
+    
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      powerPreference: "high-performance"
     })
+    this.renderer.outputEncoding = THREE.sRGBEncoding
+
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.addEventListener('change', this.animateThreeJs )
+
+    this.renderer.setSize(this.sceneCanvas.offsetWidth, this.sceneCanvas.offsetHeight)
+    this.renderer.setClearColor("#212121")
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    this.renderer.shadowMapSoft = true
+    this.renderer.shadowMap.autoUpdate = false
+    this.renderer.shadowMap.needsUpdate = true
+    this.sceneCanvas.append(this.renderer.domElement)
+    
+    // lighting
+    let ambientLight = new THREE.AmbientLight (0xdaccff, 0.5)
+    this.scene.add(ambientLight)
+
+    let light = new THREE.PointLight(0xfc831d, 1, 100)
+    light.position.set(15, 10, 15)
+    light.castShadow = true
+    light.shadow.radius = 1
+    light.shadow.mapSize.width = 2048
+    light.shadow.mapSize.height = 2048
+    this.scene.add(light)
+    this.reset(0)
+    window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
   },
   methods: {
+    reset (lev) {
+      console.log(lev)
+      while(this.scene.children.length > 0){ 
+          this.scene.remove(this.scene.children[0]); 
+      }
+      this.axios.get('./maze'+lev+'.json').then((response) => {
+        // console.log(response.data)
+        this.maze = response.data;
+
+        this.meshArray = [];
+        for (var x=0; x < this.maze.length; x++) {
+            for(var z=0; z <this.maze[0].length; z++){
+              var mesh;
+              // 牆壁
+              if (this.maze[x][z] === 1) {
+                let r = Math.floor(Math.random()*3);
+                var c = [0x3a406e, 0x00a6ff, 0xff003b][r]
+                let material = new THREE.MeshPhysicalMaterial({color: c})
+                let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
+                mesh = new THREE.Mesh(BoxGeometry, material.clone());
+                this.meshArray.push(mesh);
+                mesh.position.x = -5*x - 10;
+                mesh.position.y = -20;
+                mesh.position.z = -5*z + 20;
+
+                // wireframe
+                c = [0x6a709e, 0x30d6ff, 0xff306b][r]
+                var geo = new THREE.EdgesGeometry( mesh.geometry );
+                var mat = new THREE.LineBasicMaterial( { color: c, linewidth: 4 } );
+                var wireframe = new THREE.LineSegments( geo, mat );
+                wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
+                mesh.add( wireframe );
+
+                this.scene.add(mesh);
+              }
+
+              // 終點
+              if (this.maze[x][z] === 9) {
+                let BoxGeometry = new THREE.BoxGeometry( 2, 50, 2);
+                let material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+                this.you = new THREE.Mesh( BoxGeometry, material2.clone() );
+                this.you.position.x = -5*x - 10;
+                this.you.position.y = 5;
+                this.you.position.z = -5*z + 20;
+                this.scene.add(this.you);  
+              }
+
+              // 起點
+              if (this.maze[x][z] === 5) {
+                let Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
+                let material3 = new THREE.MeshBasicMaterial( {color: 0x00ff} );
+                this.me = new THREE.Mesh( Spheregeometry, material3.clone() );
+                this.me.position.x = -5*x - 10;
+                this.me.position.y = -20;
+                this.me.position.z = -5*z + 20;
+                this.scene.add(this.me);  
+              }
+            }
+        }
+        this.animateThreeJs();
+      })
+    },
     animateThreeJs () {
       this.renderer.render(this.scene, this.camera)
       this.renderer.shadowMap.needsUpdate = true
     },
     victory () {
-      this.win = true
-      //噴出很多方塊
-      var x = this.you.position.x;
-      var z = this.you.position.z;
+      if (this.lev == 2) {
+        this.win = true
+        //噴出很多方塊
+        var x = this.you.position.x;
+        var z = this.you.position.z;
 
-      var mesh;
+        var mesh;
 
-      for (var i = 0; i < [-4,-3,-2,-1,0,1,2,3,4].length; i++) {
-        for (var j = 0; j < [-4,-3,-2,-1,0,1,2,3,4].length; j++) {
-          let c = [0xcd7f33, 0xd9d9e9, 0xffce33][Math.floor(Math.random()*3)]
-          let material = new THREE.MeshPhysicalMaterial({color: c})
-          let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
-          mesh = new THREE.Mesh(BoxGeometry, material.clone());
+        for (var i = 0; i < [-4,-3,-2,-1,0,1,2,3,4].length; i++) {
+          for (var j = 0; j < [-4,-3,-2,-1,0,1,2,3,4].length; j++) {
+            let c = [0xcd7f33, 0xd9d9e9, 0xcfc0b3][Math.floor(Math.random()*3)]
+            let material = new THREE.MeshPhysicalMaterial({color: c})
+            let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
+            mesh = new THREE.Mesh(BoxGeometry, material.clone());
 
-          this.meshArray.push(mesh);
-          mesh.position.x = x + 10*i - 10;
-          mesh.position.y = -5;
-          mesh.position.z = z - 10*j + 20;
-          this.scene.add(mesh);
+            this.meshArray.push(mesh);
+            mesh.position.x = x + 10*i - 10;
+            mesh.position.y = -5;
+            mesh.position.z = z - 10*j + 20;
+            this.scene.add(mesh);
+          }
         }
+        this.camera.position.set(x, this.me.position.y + 50, z);
+        this.controls.update();
+        this.animateThreeJs();
+      } else {
+        alert('Level UP!')
+        this.lev++;
+        this.reset(this.lev)
       }
-      this.camera.position.set(x, this.me.position.y + 50, z);
-      this.controls.update();
-      this.animateThreeJs();
     },
     keyup(e) {
       // left key
