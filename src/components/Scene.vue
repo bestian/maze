@@ -104,11 +104,12 @@ export default {
             for(var z=0; z <this.maze[0].length; z++){
               var mesh;
               // 牆壁
+              var c;
               if (this.maze[x][z] === 1) {
                 let r = Math.floor(Math.random()*3);
-                var c = [0x3a406e, 0x00a6ff, 0xff003b][r]
+                c = [0x3a406e, 0x00a6ff, 0xff003b][r];
                 let material = new THREE.MeshPhysicalMaterial({color: c})
-                let BoxGeometry = new THREE.BoxGeometry(5, 2, 5)
+                let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
                 this.meshArray.push(mesh);
                 mesh.position.x = -5*x - 10;
