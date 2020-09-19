@@ -50,7 +50,7 @@ export default {
     /* **************
        BASIC SETUP
     ************** */
-    this.axios.get('./maze0.json').then((response) => {
+      this.axios.get('./maze0.json').then((response) => {
       console.log(response.data)
       this.maze = response.data;
       this.sceneCanvas = document.getElementById('three-scene-canvas')
