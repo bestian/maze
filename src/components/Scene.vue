@@ -112,8 +112,6 @@ export default {
       light.position.set(15, 10, 15)
       light.castShadow = true
       light.shadow.radius = 1
-      light.shadow.mapSize.width = 2048
-      light.shadow.mapSize.height = 2048
       this.scene.add(light)
       this.axios.get('./maze'+lev+'.json').then((response) => {
         // console.log(response.data)
