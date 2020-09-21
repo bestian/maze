@@ -83,9 +83,17 @@ export default {
     this.renderer.shadowMap.autoUpdate = false
     this.renderer.shadowMap.needsUpdate = true
     this.sceneCanvas.append(this.renderer.domElement)
-    
-    this.reset(0)
+
+    if (localStorage.lev) {
+      this.lev = localStorage.lev;
+    }
+    this.reset(this.lev)
     window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
+  },
+  watch: {
+    lev(newLev) {
+      localStorage.lev = newLev;
+    }
   },
   methods: {
     reset (lev) {
@@ -171,6 +179,7 @@ export default {
     },
     victory () {
       if (this.lev == 2) {
+        this.lev = 0;
         this.win = true
         //噴出很多方塊
         var x = this.you.position.x;
