@@ -6,6 +6,7 @@
       <button id="left" @click="move('x', -5); m='left'" :class = "{ active: m == 'left' }"> 左 </button> 
       <button id="right" @click="move('x', 5); m='right'" :class = "{ active: m == 'right' }"> 右 </button>
     </div>
+    <div id = "lev"> 目前{{lev}}級</div>
     <a id="win" v-show="win" @click="win = false">
       <img src="../assets/cat.jpg">
     </a>
@@ -40,7 +41,17 @@ export default {
     // 5: 起點
     // 9: 終點
       maze: null,
-      mazes: ['maze0.json','maze1.json','maze2.json']
+      mazes: ['maze0.json','maze1.json','maze2.json'],
+      colors: [
+        [0x3a406e, 0x00a6ff, 0xff003b],
+        [0x3a6e40, 0xffa600, 0x00ff3b],
+        [0x403a6e, 0xa600ff, 0x003bff]
+      ],
+      borders: [
+        [0x6a709e, 0x30d6ff, 0xff306b],
+        [0x6a9e70, 0xffd630, 0x30ff6b],
+        [0x706a9e, 0xd630ff, 0x306bff]
+      ]
     }
   },
   created () {
@@ -54,9 +65,7 @@ export default {
       this.sceneCanvas.getBoundingClientRect().width / this.sceneCanvas.getBoundingClientRect().height,
       0.1,
       1000
-    )
-    this.camera.position.set(20, 5, -20)
-    
+    )    
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: "high-performance"
@@ -81,6 +90,9 @@ export default {
   methods: {
     reset (lev) {
       console.log(lev)
+
+      this.camera.position.set(20, 5, -20)
+
       while(this.scene.children.length > 0){ 
           this.scene.remove(this.scene.children[0]); 
       }
@@ -107,7 +119,7 @@ export default {
               var c;
               if (this.maze[x][z] === 1) {
                 let r = Math.floor(Math.random()*3);
-                c = [0x3a406e, 0x00a6ff, 0xff003b][r];
+                c = this.colors[lev][r];
                 let material = new THREE.MeshPhysicalMaterial({color: c})
                 let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
@@ -117,7 +129,7 @@ export default {
                 mesh.position.z = -5*z + 20;
 
                 // wireframe
-                c = [0x6a709e, 0x30d6ff, 0xff306b][r]
+                c = this.borders[lev][r]
                 var geo = new THREE.EdgesGeometry( mesh.geometry );
                 var mat = new THREE.LineBasicMaterial( { color: c, linewidth: 4 } );
                 var wireframe = new THREE.LineSegments( geo, mat );
@@ -184,7 +196,7 @@ export default {
         this.controls.update();
         this.animateThreeJs();
       } else {
-        alert('Level UP!')
+        alert('你升級啦！')
         this.lev++;
         this.reset(this.lev)
       }
@@ -238,6 +250,15 @@ export default {
 </script>
 
 <style type="text/css" scoped="">
+
+#lev {
+  position: fixed;
+  top: 1em;
+  right: 1em;
+  color: white;
+  background-color: black;
+  padding: 3px;
+}
 
 #ctrl {
   position: fixed;
