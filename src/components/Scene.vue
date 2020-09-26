@@ -39,7 +39,7 @@ export default {
       audio: null,
       m: null,
       lev: 0,
-      food: 1000,
+      food: 300,
     // 自訂迷宮
     // 0: 空地
     // 1: 牆
@@ -92,12 +92,24 @@ export default {
     if (localStorage.lev) {
       this.lev = localStorage.lev;
     }
+    if (localStorage.food) {
+      this.food = localStorage.food;
+    }
+    if (localStorage.me) {
+      this.me = localStorage.me;
+    }
     this.reset(this.lev)
     window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
   },
   watch: {
     lev(newLev) {
       localStorage.lev = newLev;
+    },
+    food(newfood) {
+      localStorage.food = newfood;
+    },
+    me(newme) {
+      localStorage.me = newme;
     }
   },
   methods: {
@@ -145,7 +157,7 @@ export default {
                 let r = Math.floor(Math.random()*3);
                 c = this.colors[lev][r];
                 let material = new THREE.MeshPhysicalMaterial({color: c})
-                let BoxGeometry = new THREE.BoxGeometry(5, 1, 5);
+                let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
                 this.meshArray.push(mesh);
                 mesh.position.x = -5*x - 10;
@@ -247,9 +259,19 @@ export default {
       // s key
       if (e.which === 83) { this.move('z', 5); this.m = 'down' }
       // v key
-      if (e.which === 86) { this.victory() }
+      if (e.which === 86) { this.die() }
+    },
+    die () {
+      window.alert('你餓死了');
+      this.lev = 0;
+      this.food = 300;
+      this.reset(this.lev)
     },
     move (xyz, int) {
+      this.food--;
+      if (this.food === 0) {
+        this.die()
+      }
       this.me.position[xyz] += int;
       for (var i = 0; i < this.meshArray.length; i++) {
 
