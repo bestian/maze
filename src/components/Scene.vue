@@ -204,8 +204,10 @@ export default {
     },
     victory () {
       if (this.lev == 2) {
+        alert('你過關啦！')
         this.lev = 0;
-        this.win = true
+        this.win = true;
+        this.food = 300;
         //噴出很多方塊
         var x = this.you.position.x;
         var z = this.you.position.z;
