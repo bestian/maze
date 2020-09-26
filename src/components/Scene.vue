@@ -6,7 +6,11 @@
       <button id="left" @click="move('x', -5); m='left'" :class = "{ active: m == 'left' }"> 左 </button> 
       <button id="right" @click="move('x', 5); m='right'" :class = "{ active: m == 'right' }"> 右 </button>
     </div>
-    <div id = "lev"> 目前{{lev}}級</div>
+    <div id = "lev">
+        目前{{lev}}級
+        <br/>
+        目前食物:{{food}}
+    </div>
     <a id="win" v-show="win" @click="win = false">
       <img src="../assets/cat.jpg">
     </a>
@@ -35,6 +39,7 @@ export default {
       audio: null,
       m: null,
       lev: 0,
+      food: 1000,
     // 自訂迷宮
     // 0: 空地
     // 1: 牆
@@ -108,11 +113,12 @@ export default {
       let ambientLight = new THREE.AmbientLight (0xdaccff, 0.5)
       this.scene.add(ambientLight)
 
-      let light = new THREE.PointLight(0xfc831d, 1, 100)
-      light.position.set(15, 10, 15)
+      let light = new THREE.PointLight(0xfc831d, 1, 300)
+      light.position.set(20, 100, -20)
       light.castShadow = true
       light.shadow.radius = 1
       this.scene.add(light)
+
       this.axios.get('./maze'+lev+'.json').then((response) => {
         // console.log(response.data)
         this.maze = response.data;
@@ -123,16 +129,29 @@ export default {
               var mesh;
               // 牆壁
               var c;
+
+              let material = new THREE.MeshPhysicalMaterial({color: 0xc9c9c9})
+              let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
+                mesh = new THREE.Mesh(BoxGeometry, material.clone());
+
+              mesh.position.x = -5*x - 10;
+              mesh.position.y = -22;
+              mesh.position.z = -5*z + 20;
+
+              mesh.receiveShadow = true;
+              this.scene.add(mesh);
+
               if (this.maze[x][z] === 1) {
                 let r = Math.floor(Math.random()*3);
                 c = this.colors[lev][r];
                 let material = new THREE.MeshPhysicalMaterial({color: c})
-                let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
+                let BoxGeometry = new THREE.BoxGeometry(5, 1, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
                 this.meshArray.push(mesh);
                 mesh.position.x = -5*x - 10;
                 mesh.position.y = -20;
                 mesh.position.z = -5*z + 20;
+                mesh.castShadow = true;
 
                 // wireframe
                 c = this.borders[lev][r]
@@ -153,7 +172,8 @@ export default {
                 this.you.position.x = -5*x - 10;
                 this.you.position.y = 5;
                 this.you.position.z = -5*z + 20;
-                this.scene.add(this.you);  
+                this.you.castShadow = true;
+                this.scene.add(this.you);
               }
 
               // 起點
@@ -164,6 +184,7 @@ export default {
                 this.me.position.x = -5*x - 10;
                 this.me.position.y = -20;
                 this.me.position.z = -5*z + 20;
+                this.me.castShadow = true;
                 this.scene.add(this.me);  
               }
             }
