@@ -95,9 +95,6 @@ export default {
     if (localStorage.food) {
       this.food = localStorage.food;
     }
-    if (localStorage.me) {
-      this.me = localStorage.me;
-    }
     this.reset(this.lev)
     window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
   },
@@ -107,9 +104,6 @@ export default {
     },
     food(newfood) {
       localStorage.food = newfood;
-    },
-    me(newme) {
-      localStorage.me = newme;
     }
   },
   methods: {
@@ -147,7 +141,7 @@ export default {
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
 
               mesh.position.x = -5*x - 10;
-              mesh.position.y = -2;
+              mesh.position.y = -22;
               mesh.position.z = -5*z + 20;
 
               mesh.receiveShadow = true;
