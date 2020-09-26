@@ -135,7 +135,7 @@ export default {
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
 
               mesh.position.x = -5*x - 10;
-              mesh.position.y = -22;
+              mesh.position.y = -2;
               mesh.position.z = -5*z + 20;
 
               mesh.receiveShadow = true;
@@ -145,7 +145,7 @@ export default {
                 let r = Math.floor(Math.random()*3);
                 c = this.colors[lev][r];
                 let material = new THREE.MeshPhysicalMaterial({color: c})
-                let BoxGeometry = new THREE.BoxGeometry(5, 1, 5);
+                let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
                 this.meshArray.push(mesh);
                 mesh.position.x = -5*x - 10;
