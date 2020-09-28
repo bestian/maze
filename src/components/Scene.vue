@@ -14,7 +14,7 @@
     <a id="pop" v-show="win || died || bombed" @click="again()">
       <img src="../assets/cat.jpg" v-show="win">
       <img src="../assets/food.jpg" v-show="died">
-      <img src="../assets/bomb.jpg" v-show="bombed">
+      <img src="../assets/trapdoor.png" v-show="bombed">
     </a>
     <div id="three-scene-canvas"></div>
   </div>
@@ -144,6 +144,11 @@ export default {
               var c;
 
               let material = new THREE.MeshPhysicalMaterial({color: 0xc9c9c9})
+
+              if (this.maze[x][z] === 4) {
+                material = new THREE.MeshPhysicalMaterial({color: 0xa0a0a0})
+              }
+
               let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
 
@@ -152,6 +157,7 @@ export default {
               mesh.position.z = -5*z + 20;
 
               mesh.receiveShadow = true;
+
               this.scene.add(mesh);
 
               if (this.maze[x][z] === 1) {
@@ -203,10 +209,10 @@ export default {
               // 陷井
               if (this.maze[x][z] === 4) {
                 let Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
-                let material3 = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+                let material3 = new THREE.MeshBasicMaterial( {color: 0x303030} );
                 let trap = new THREE.Mesh( Spheregeometry, material3.clone() );
                 trap.position.x = -5*x - 10;
-                trap.position.y = -20;
+                trap.position.y = -21;
                 trap.position.z = -5*z + 20;
                 trap.castShadow = true;
                 this.trapArray.push(trap);
@@ -285,7 +291,7 @@ export default {
     },
     bomb () {
       this.bombed = true;
-      window.alert('你被炸死了');
+      window.alert('你掉入陷井了');
     },
     again () {
       this.win = false;
