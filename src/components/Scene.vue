@@ -11,8 +11,10 @@
         <br/>
         目前食物:{{food}}
     </div>
-    <a id="win" v-show="win" @click="win = false">
-      <img src="../assets/cat.jpg">
+    <a id="pop" v-show="win || died || bombed" @click="again()">
+      <img src="../assets/cat.jpg" v-show="win">
+      <img src="../assets/food.jpg" v-show="died">
+      <img src="../assets/bomb.jpg" v-show="bombed">
     </a>
     <div id="three-scene-canvas"></div>
   </div>
@@ -33,9 +35,12 @@ export default {
       renderer: null,
       controls: null,
       meshArray: [],
+      trapArray: [],
       me: null,
       you: null,
       win: false,
+      died: false,
+      bombed: false,
       audio: null,
       m: null,
       lev: 0,
@@ -130,6 +135,8 @@ export default {
         this.maze = response.data;
 
         this.meshArray = [];
+        this.trapArray = [];
+
         for (var x=0; x < this.maze.length; x++) {
             for(var z=0; z <this.maze[0].length; z++){
               var mesh;
@@ -153,11 +160,11 @@ export default {
                 let material = new THREE.MeshPhysicalMaterial({color: c})
                 let BoxGeometry = new THREE.BoxGeometry(5, 2, 5);
                 mesh = new THREE.Mesh(BoxGeometry, material.clone());
-                this.meshArray.push(mesh);
                 mesh.position.x = -5*x - 10;
                 mesh.position.y = -20;
                 mesh.position.z = -5*z + 20;
                 mesh.castShadow = true;
+                this.meshArray.push(mesh);
 
                 // wireframe
                 c = this.borders[lev][r]
@@ -166,7 +173,6 @@ export default {
                 var wireframe = new THREE.LineSegments( geo, mat );
                 wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
                 mesh.add( wireframe );
-
                 this.scene.add(mesh);
               }
 
@@ -185,7 +191,7 @@ export default {
               // 起點
               if (this.maze[x][z] === 5) {
                 let Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
-                let material3 = new THREE.MeshBasicMaterial( {color: 0x00ff} );
+                let material3 = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
                 this.me = new THREE.Mesh( Spheregeometry, material3.clone() );
                 this.me.position.x = -5*x - 10;
                 this.me.position.y = -20;
@@ -193,8 +199,24 @@ export default {
                 this.me.castShadow = true;
                 this.scene.add(this.me);  
               }
+
+              // 陷井
+              if (this.maze[x][z] === 4) {
+                let Spheregeometry = new THREE.SphereGeometry( 1, 32, 32 );
+                let material3 = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+                let trap = new THREE.Mesh( Spheregeometry, material3.clone() );
+                trap.position.x = -5*x - 10;
+                trap.position.y = -20;
+                trap.position.z = -5*z + 20;
+                trap.castShadow = true;
+                this.trapArray.push(trap);
+                this.scene.add(trap);  
+              }
             }
         }
+        this.controls.target.set(this.me.position.x, this.me.position.y, this.me.position.z);
+        this.controls.update();
+
         this.animateThreeJs();
       })
     },
@@ -258,7 +280,17 @@ export default {
       if (e.which === 86) { this.die() }
     },
     die () {
+      this.died = true;
       window.alert('你餓死了');
+    },
+    bomb () {
+      this.bombed = true;
+      window.alert('你被炸死了');
+    },
+    again () {
+      this.win = false;
+      this.died = false;
+      this.bombed = false;
       this.lev = 0;
       this.food = 300;
       this.reset(this.lev)
@@ -269,21 +301,30 @@ export default {
         this.die()
       }
       this.me.position[xyz] += int;
-      for (var i = 0; i < this.meshArray.length; i++) {
 
-        var position = new THREE.Vector3();
+      for (let i = 0; i < this.meshArray.length; i++) {
+        let position = new THREE.Vector3();
         position.setFromMatrixPosition( this.meshArray[i].matrixWorld );
 
         if (position.x === this.me.position.x && position.z === this.me.position.z ) {
           this.me.position[xyz] -= int;
         } // 如果撞牆就取消移動
-
-        var xz = {x: this.me.position.x, z: this.me.position.z }
-        
-        this.camera.position.set(xz.x, this.me.position.y + 20, xz.z);
-        this.controls.target.set(this.me.position.x, this.me.position.y, this.me.position.z);
-        this.controls.update();
       }
+
+      for (let i = 0; i < this.trapArray.length; i++) {
+        let position = new THREE.Vector3();
+        position.setFromMatrixPosition( this.trapArray[i].matrixWorld );
+
+        if (position.x === this.me.position.x && position.z === this.me.position.z ) {
+          this.bomb()
+        } // 如果觸發陷阱就死了
+      }
+
+      var xz = {x: this.me.position.x, z: this.me.position.z }
+      
+      this.camera.position.set(xz.x, this.me.position.y + 20, xz.z);
+      this.controls.target.set(this.me.position.x, this.me.position.y, this.me.position.z);
+      this.controls.update();
 
       if (this.me.position.x === this.you.position.x && this.me.position.z === this.you.position.z ) {
         this.victory()
@@ -310,28 +351,37 @@ export default {
   position: fixed;
   bottom: 150px;
   left: 0;
-  z-index: 999;
+  z-index: 9;
 }
 
 #ctrl button {
   font-size: 48px;
 }
 
-#win {
+#pop {
   display: flex;
   justify-content: center;
   align-items: center;
   position: fixed;
-  top: 50px;
-  left: 50px;
-  width: 10vw;
-  height: 10vh;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   cursor: pointer;
 }
 
-#win img {
+#pop img {
   cursor: pointer;
   width: 100%;
+  height: 100%;
+  opacity: 0.96;
+  transition: all 0.3s ease;
+  border-radius: 25px;
+}
+
+#pop img:hover {
+  opacity: 1
 }
 
 #left, #right, #up, #down {
