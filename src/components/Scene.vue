@@ -61,6 +61,7 @@ export default {
     // 5: 起點
     // 7: 飛行
     // 9: 終點
+    // 3: 全局終點
       maze: null,
       mazes: ['maze0.json','maze1.json','maze2.json'],
       colors: [
@@ -212,7 +213,7 @@ export default {
               }
 
               // 終點
-              if (this.maze[x][z] === 9) {
+              if (this.maze[x][z] === 9 || this.maze[x][z] === 3) {
                 let BoxGeometry = new THREE.BoxGeometry( 2, 50, 2);
                 let material2 = new THREE.MeshBasicMaterial( {color: 0xffff00} );
                 this.you = new THREE.Mesh( BoxGeometry, material2.clone() );
@@ -220,6 +221,7 @@ export default {
                 this.you.position.y = 5;
                 this.you.position.z = -5*z + 20;
                 this.you.castShadow = true;
+                if (this.maze[x][z] === 3) { this.you.end = true}
                 this.scene.add(this.you);
               }
 
@@ -274,7 +276,7 @@ export default {
       this.renderer.shadowMap.needsUpdate = true
     },
     victory () {
-      if (this.lev == 2) {
+      if (this.you.end) {
         alert('你過關啦！')
         this.lev = 0;
         this.fly = false;
