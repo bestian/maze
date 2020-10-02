@@ -38,7 +38,7 @@ export default {
       trapArray: [],
       me: null,
       you: null,
-      wing: null,
+      wing: [],
       fly: false,
       win: false,
       died: false,
@@ -46,7 +46,7 @@ export default {
       audio: null,
       m: null,
       lev: 0,
-      food: 400,
+      food: 500,
     // 自訂迷宮
     // 0: 空地
     // 1: 牆
@@ -128,7 +128,7 @@ export default {
       let ambientLight = new THREE.AmbientLight (0xdaccff, 0.5)
       this.scene.add(ambientLight)
 
-      let light = new THREE.PointLight(0xfc831d, 1, 400)
+      let light = new THREE.PointLight(0xfc831d, 1, 500)
       light.position.set(20, 100, -20)
       light.castShadow = true
       light.shadow.radius = 1
@@ -202,12 +202,15 @@ export default {
               if (this.maze[x][z] === 7) {
                 let BoxGeometry = new THREE.BoxGeometry( 2, 50, 2);
                 let material2 = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-                this.wing = new THREE.Mesh( BoxGeometry, material2.clone() );
-                this.wing.position.x = -5*x - 10;
-                this.wing.position.y = 5;
-                this.wing.position.z = -5*z + 20;
-                this.wing.castShadow = true;
-                this.scene.add(this.wing);
+                let w = new THREE.Mesh( BoxGeometry, material2.clone() );
+                w.position.x = -5*x - 10;
+                w.position.y = 5;
+                w.position.z = -5*z + 20;
+                w.castShadow = true;
+
+                this.wing.push(w)
+
+                this.scene.add(w);
               }
 
               // 起點
@@ -251,8 +254,9 @@ export default {
         alert('你過關啦！')
         this.lev = 0;
         this.fly = false;
+        this.wing = [];
         this.win = true;
-        this.food = 400;
+        this.food = 500;
         //噴出很多方塊
         var x = this.you.position.x;
         var z = this.you.position.z;
@@ -279,6 +283,7 @@ export default {
       } else {
         alert('你升級啦！')
         this.fly = false;
+        this.wing = [];
         this.lev++;
         this.reset(this.lev)
       }
@@ -316,7 +321,7 @@ export default {
       this.died = false;
       this.bombed = false;
       this.lev = 0;
-      this.food = 400;
+      this.food = 500;
       this.reset(this.lev)
     },
     move (xyz, int) {
@@ -358,9 +363,13 @@ export default {
         this.victory()
       }
 
-      if (this.me.position.x === this.wing.position.x && this.me.position.z === this.wing.position.z ) {
-        this.fly = true
-        alert('你起飛了')
+      for (let i = 0; i < this.wing.length; i++) {
+        let position = new THREE.Vector3();
+        position.setFromMatrixPosition( this.wing[i].matrixWorld );
+        if (position.x === this.me.position.x && position.z === this.me.position.z ) {
+          this.fly = true
+          alert('你起飛了')
+        }
       }
 
       this.animateThreeJs();
