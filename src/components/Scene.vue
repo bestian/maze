@@ -15,6 +15,10 @@
         目前食物:{{food}}
         <br/>
         剩餘時間:{{timer}}秒
+        <br/>
+        移動模式:{{fly ? '飛行' : '步行'}}
+        <br/>
+        特殊能力:{{sup ? '穿牆' : '無'}}
     </div>
     <a id="pop" v-show="win || died || bombed" @click="again()">
       <img src="../assets/cat.jpg" v-show="win">
@@ -364,7 +368,7 @@ export default {
 
         if (position.x === this.me.position.x && position.z === this.me.position.z) { // && !this.fly
           if (this.sup) {
-            alert('你穿牆了')
+          //  alert('你穿牆了')
           } else {
             this.me.position[xyz] -= int;
           }
@@ -379,7 +383,7 @@ export default {
           if (!this.fly) {
             this.bomb() // 如果觸發陷阱就死了
           } else {
-            alert('你飛過陷井了')
+          //  alert('你飛過陷井了')
           }
         }
       }
@@ -399,7 +403,7 @@ export default {
         position.setFromMatrixPosition( this.wing[i].matrixWorld );
         if (position.x === this.me.position.x && position.z === this.me.position.z ) {
           this.fly = true
-          this.me.position.y += 2;
+          this.me.position.y = -15;
           alert('你起飛了')
         }
       }
