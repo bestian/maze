@@ -6,10 +6,15 @@
       <button id="left" @click="move('x', -5); m='left'" :class = "{ active: m == 'left' }"> 左 </button> 
       <button id="right" @click="move('x', 5); m='right'" :class = "{ active: m == 'right' }"> 右 </button>
     </div>
+    <div id="spell"> 
+      <button id="super" @click="superman()" :class = "{active: sup }"> 神 </button>
+    </div>
     <div id = "lev">
         目前{{lev}}級
         <br/>
         目前食物:{{food}}
+        <br/>
+        剩餘時間:{{timer}}秒
     </div>
     <a id="pop" v-show="win || died || bombed" @click="again()">
       <img src="../assets/cat.jpg" v-show="win">
@@ -40,6 +45,7 @@ export default {
       you: null,
       wing: [],
       fly: false,
+      sup: false,
       win: false,
       died: false,
       bombed: false,
@@ -47,6 +53,7 @@ export default {
       m: null,
       lev: 0,
       food: 500,
+      timer: 300,
     // 自訂迷宮
     // 0: 空地
     // 1: 牆
@@ -106,6 +113,7 @@ export default {
     }
     this.reset(this.lev)
     window.addEventListener('keyup', this.keyup); // 聽鍵盤事件
+    setInterval(this.go, 1000)
   },
   watch: {
     lev(newLev) {
@@ -116,10 +124,27 @@ export default {
     }
   },
   methods: {
+    superman () {
+      if (!this.sup) {
+        alert('進入超人模式')
+      } else {
+        alert('回到正常模式')
+      }
+      this.sup = !this.sup;
+    },
+    go () {
+      this.timer--;
+      if (this.timer === 0) {
+        alert('時間到')
+        this.again()
+      }
+    },
     reset (lev) {
       console.log(lev)
 
-      this.camera.position.set(20, 5, -20)
+      this.timer = 300;
+      this.sup = false;
+      this.camera.position.set(20, 5, -20);
 
       while(this.scene.children.length > 0){ 
           this.scene.remove(this.scene.children[0]); 
@@ -241,7 +266,6 @@ export default {
         }
         this.controls.target.set(this.me.position.x, this.me.position.y, this.me.position.z);
         this.controls.update();
-
         this.animateThreeJs();
       })
     },
@@ -322,10 +346,11 @@ export default {
       this.bombed = false;
       this.lev = 0;
       this.food = 500;
+      this.timer = 300;
       this.reset(this.lev)
     },
     move (xyz, int) {
-      this.food--;
+      if (!this.sup) { this.food-- } else { this.food -= 10}
       if (this.food === 0) {
         this.die()
       }
@@ -336,7 +361,11 @@ export default {
         position.setFromMatrixPosition( this.meshArray[i].matrixWorld );
 
         if (position.x === this.me.position.x && position.z === this.me.position.z) { // && !this.fly
-          this.me.position[xyz] -= int;
+          if (this.sup) {
+            alert('你穿牆了')
+          } else {
+            this.me.position[xyz] -= int;
+          }
         } // 如果撞牆就取消移動
       }
 
@@ -397,8 +426,23 @@ export default {
   z-index: 9;
 }
 
-#ctrl button {
+#spell {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 9;
+}
+
+#ctrl button, #spell button {
   font-size: 48px;
+}
+
+#super.active {
+  background-color: yellow;
+}
+
+#super {
+  border-radius: 50%;
 }
 
 #pop {
