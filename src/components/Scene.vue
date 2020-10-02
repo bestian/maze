@@ -335,7 +335,7 @@ export default {
         let position = new THREE.Vector3();
         position.setFromMatrixPosition( this.meshArray[i].matrixWorld );
 
-        if (position.x === this.me.position.x && position.z === this.me.position.z ) {
+        if (position.x === this.me.position.x && position.z === this.me.position.z && !this.fly) {
           this.me.position[xyz] -= int;
         } // 如果撞牆就取消移動
       }
@@ -368,6 +368,7 @@ export default {
         position.setFromMatrixPosition( this.wing[i].matrixWorld );
         if (position.x === this.me.position.x && position.z === this.me.position.z ) {
           this.fly = true
+          this.me.position.y += 50;
           alert('你起飛了')
         }
       }
