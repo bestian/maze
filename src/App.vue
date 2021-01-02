@@ -19,6 +19,14 @@ export default {
   name: 'App',
   components: {
     Scene, Aplayer
+  },
+  mounted () {
+    console.log('hello')
+    var elements = document.getElementsByClassName('aplayer-icon')
+    for (var index = 0; index < elements.length; index++) {
+      elements[index].setAttribute('name', 'Play')
+      elements[index].setAttribute('aria-label', 'Play')
+    }
   }
 }
 </script>
